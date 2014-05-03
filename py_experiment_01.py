@@ -7,7 +7,9 @@ from pandas import *
 import datetime
 from sklearn.linear_model import LinearRegression
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import LinearSVC
 from sklearn.svm import SVR
+from sklearn.neural_network import BernoulliRBM
 
 
 def prodata():
@@ -19,6 +21,7 @@ def prodata():
     feature = del_lack_markdown(feature)
 
     feature = del_unemployment(feature)
+    #feature = feature
 
     train = del_train_markdown(train)
 
@@ -110,14 +113,36 @@ def linear_model(train_x,train_y,test_x):
 
 
 def knn_model(train_x,train_y,test_x,k):
-    clf = KNeighborsClassifier(n_neighbors=k,algorithm='kd_tree')
+    #clf = KNeighborsClassifier(n_neighbors=k,algorithm='kd_tree')
+    clf = KNeighborsClassifier(n_neighbors=k,algorithm='auto')
     clf.fit(train_x,train_y)
     test_y = clf.predict(test_x)
     return test_y
 
 
-#def knn_model(train_x,tran_y,test_x,k)
-#对训练集中的markdown中的空值进行处理
+def svm_model(train_x,train_y,test_x):
+    clf = LinearSVC()
+    clf.fit(train_x,train_y)
+    test_y = clf.predict(test_x)
+    return test_y
+
+
+def svr_model(train_x,train_y,test_x):
+    clf = SVR(probability=True)
+    clf.fit(train_x,train_y)
+    test_y = clf.predict(test_x)
+    return test_y
+
+
+def nn_model(train_x,train_y,test_x):
+    clf = BernoulliRBM()
+    clf.fit(train_x,train_y)
+    test_y = clf.predict(test_x)
+    return test_y
+
+
+
+
 
 def nan_rep(trains):
     md = []
@@ -188,8 +213,10 @@ if __name__=="__main__":
             print len(train_x),len(test_x)
             if len(test_x) > 0:
                 if len(train_x) <k:
-                    test_y = knn_model(train_x,train_y,test_x,len(train_x))
+                    #test_y = knn_model(train_x,train_y,test_x,len(train_x))
+                    test_y = svr_model(train_x,train_y,test_x)
                     write(test_y,i,dept,dates)
                 else:
-                    test_y = knn_model(train_x,train_y,test_x,k)
+                    #test_y = knn_model(train_x,train_y,test_x,k)
+                    test_y = svr_model(train_x,train_y,test_x)
                     write(test_y,i,dept,dates)
